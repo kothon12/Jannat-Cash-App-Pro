@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jannat's Cash Pro - ক্যাশ হিসাব</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4A90E2; --success-color: #28a745; --danger-color: #dc3545;
+            --info-color: #17a2b8; --secondary-color: #6c757d; --background-color: #f8f9fa;
+            --text-color: #343a40; --card-bg-color: #ffffff; --border-color: #dee2e6;
+            --box-shadow: 0 4px 25px rgba(0, 0, 0, 0.07);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Hind Siliguri', sans-serif; background-color: var(--background-color);
+            color: var(--text-color); display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; padding: 20px;
+        }
+        .app-container { width: 100%; max-width: 500px; position: relative; }
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { font-size: 2.2rem; color: var(--primary-color); font-weight: 700; }
+        .card {
+            background-color: var(--card-bg-color); border-radius: 16px; padding: 30px;
+            box-shadow: var(--box-shadow); margin-bottom: 20px; border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease-in-out; display: none;
+        }
+        .card.active { display: block; }
+        .card h2 { font-size: 1.6rem; margin-bottom: 25px; color: var(--primary-color); text-align: center; font-weight: 600; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; }
+        .form-group input, .form-group select, .search-input, .add-sale-form input {
+            width: 100%; padding: 12px 15px; border: 1px solid var(--border-color);
+            border-radius: 8px; font-size: 1rem; font-family: 'Hind Siliguri', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        .date-shift-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { 
+            width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.1rem;
+            font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;
+        }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #357ABD; }
+        .btn-secondary { background-color: var(--secondary-color); color: white; margin-top: 10px; }
+        .btn-success { background-color: var(--success-color); color: white; }
+        .btn-info { background-color: var(--info-color); color: white; }
+        .btn-danger { background-color: var(--danger-color); color: white; width: auto; padding: 10px 20px; display: block; margin: 30px auto 0 auto; }
+        .add-sale-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: center; margin-bottom: 5px; }
+        .add-sale-form .form-group { margin: 0; }
+        .btn-add {
+            background-color: var(--success-color); color: white; border: none; border-radius: 8px;
+            font-size: 1.5rem; font-weight: bold; cursor: pointer; height: 48px; width: 50px;
+        }
+        .delete-btn {
+            background: var(--danger-color); color:white; border:none; border-radius:50%;
+            width:24px; height:24px; font-weight:bold; cursor:pointer; flex-shrink: 0;
+        }
+        .sale-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 10px;
+            background-color: #f8f9fa; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px;
+        }
+        .history-item, .summary-date-item {
+            background-color: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px;
+            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; transition: box-shadow 0.2s; cursor: pointer;
+        }
+        .history-item:hover, .summary-date-item:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .history-item-info h3, .summary-date-item h3 { font-size: 1.1rem; color: var(--primary-color); margin-bottom: 5px; }
+        .dashboard-header { text-align: center; margin-bottom: 35px; }
+        .dashboard-header h2 { font-size: 2.2rem; color: var(--primary-color); }
+        .dashboard-header p { font-size: 1.1rem; color: var(--secondary-color); margin-top: 5px; }
+        .option-icon { margin: 0 auto 20px auto; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .option-icon svg { width: 30px; height: 30px; }
+        .new-calc-icon { background-color: rgba(40, 167, 69, 0.1); }
+        .new-calc-icon svg { fill: var(--success-color); }
+        .history-icon { background-color: rgba(23, 162, 184, 0.1); }
+        .history-icon svg { fill: var(--info-color); }
+        .daily-summary-icon { background-color: rgba(74, 144, 226, 0.1); }
+        .daily-summary-icon svg { fill: var(--primary-color); }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card h4 {
+            font-size: 1rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .stat-card p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .chart-container-main {
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .action-btn {
+            background: linear-gradient(145deg, #ffffff, #f7f8fc);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .action-btn h3 {
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+        .note-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .note-row { display: flex; flex-direction: column; background: #fafafa; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .note-row label { font-weight: 600; margin-bottom: 5px; }
+        .note-row input { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; }
+        .note-row .note-subtotal { font-size: 0.8rem; color: #555; margin-top: 5px; font-weight: 500; }
+        .total-cash-display { text-align: right; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 1.1rem; }
+        .grand-total-cash-display { text-align: right; margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--primary-color); font-size: 1.2rem; font-weight: 700;}
+        .total-display { text-align: center; margin: 15px 0; font-size: 1.1rem; }
+        .summary-row { display: flex; justify-content: space-between; padding: 14px 5px; align-items: center; font-size: 1.1rem; }
+        .summary-row span:first-child { font-weight: 500; color: #495057; }
+        .summary-row span:last-child { font-weight: 600; }
+        .summary-bold-final span { font-weight: 700; font-size: 1.25rem; color: var(--text-color); }
+        .summary-divider { border: none; height: 1px; background-color: #333; margin: 8px 0; }
+        .summary-double-divider { border: none; border-top: 3px double #333; margin: 8px 0; }
+        .details-section { border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-top: 20px; margin-bottom: 20px; }
+        .details-section h3 { text-align: center; margin-bottom: 15px; font-weight: 600; color: var(--primary-color); font-size: 1.4rem; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);}
+        .details-subtitle { text-align:center; margin: 25px 0 15px 0; font-weight: 600; color: var(--secondary-color); }
+        #summarySheetDetailsContainer .sheet-details-header, #summarySheetDetailsContainer .sheet-details-row {
+            display: grid; grid-template-columns: 1fr 2fr 2fr; gap: 10px; padding: 10px; align-items: center;
+        }
+        #summarySheetDetailsContainer .sheet-details-header { font-weight: 600; border-bottom: 2px solid var(--border-color); background-color: #f8f9fa; }
+        #summarySheetDetailsContainer .sheet-details-row { border-bottom: 1px solid var(--border-color); }
+        #summarySheetDetailsContainer .sheet-details-row:last-child { border-bottom: none; }
+        #summarySheetDetailsContainer .sheet-details-row div:last-child { text-align: right; font-weight: 500; }
+        .error-message { color: var(--danger-color); text-align: center; margin-top: 15px; height: 20px; }
+        .button-group { display:flex; gap:15px; margin-top:20px; }
+        .search-form { display:flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+        .search-form .btn { width: auto; padding: 12px 15px; margin-top: 0; }
+        .history-item .btn { width: auto; padding: 10px 15px; margin-top:0; }
+        .header-info { text-align: center; margin-bottom: 20px; font-size: 1.1rem; color: var(--secondary-color); }
+        .loader-container {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8); z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .loader {
+            border: 8px solid #f3f3f3; border-radius: 50%; border-top: 8px solid var(--primary-color);
+            width: 60px; height: 60px; animation: spin 1s linear infinite;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 360px) { .date-shift-group, .note-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div id="loader" class="loader-container" style="display: none;"><div class="loader"></div></div>
+
+        <div id="loginCard" class="card">
+            <header><h1>Jannat's Cash Pro</h1></header>
+            <h2>লগইন করুন</h2>
+            <div class="form-group"><label for="loginEmail">ইমেল</label><input type="email" id="loginEmail" placeholder="আপনার ইমেল"></div>
+            <div class="form-group"><label for="loginPassword">পাসওয়ার্ড</label><input type="password" id="loginPassword" placeholder="আপনার পাসওয়ার্ড"></div>
+            <button id="loginBtn" class="btn btn-primary">লগইন করুন</button>
+            <p id="loginError" class="error-message"></p>
+        </div>
+
+        <div id="dashboardCard" class="card">
+            <div class="dashboard-header">
+                <h2 style="margin-bottom: 0;">ড্যাশবোর্ড</h2>
+                <p id="welcomeUserEmail"></p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>আজকের মোট বিক্রয়</h4>
+                    <p id="statTodaySales">৳ ০.০০</p>
+                </div>
+                <div class="stat-card">
+                    <h4>গতকালের মোট বিক্রয়</h4>
+                    <p id="statYesterdaySales">৳ ০.০০</p>
+                </div>
+                <div class="stat-card">
+                    <h4>এই সপ্তাহের মোট বিক্রয়</h4>
+                    <p id="statWeeklySales">৳ ০.০০</p>
+                </div>
+            </div>
+            <div class="chart-container-main">
+                <canvas id="salesTrendChartDashboard"></canvas>
+            </div>
+            <div class="action-buttons">
+                <div class="action-btn" id="goToNewCalculationBtn">
+                    <div class="option-icon new-calc-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+                    <h3>নতুন হিসাব</h3>
+                </div>
+                <div class="action-btn" id="goToHistoryBtn">
+                    <div class="option-icon history-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 0 1 7-7 7 7 0 0 1 7 7 7 7 0 0 1-7 7v2a9 9 0 0 0 9-9 9 9 0 0 0-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg></div>
+                    <h3>পূর্বের হিসাব</h3>
+                </div>
+                <div class="action-btn" id="goToDailySummaryBtn">
+                    <div class="option-icon daily-summary-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg></div>
+                    <h3>দৈনিক সারসংক্ষেপ</h3>
+                </div>
+            </div>
+            <button id="logoutBtn" class="btn btn-danger">লগআউট</button>
+        </div>
+
+        <div id="appContent" style="display: none;">
+            <header><h1>Jannat's Cash Pro</h1></header>
+            <main>
+                <div id="step1" class="card">
+                    <h2>ধাপ ১: বিক্রয় ও ভাউচার</h2>
+                    <div class="form-group">
+                        <label for="calculationDate">তারিখ</label>
+                        <input type="date" id="calculationDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="calculationShift">শিফট</label>
+                        <select id="calculationShift">
+                            <option value="দিন">দিন</option>
+                            <option value="রাত">রাত</option>
+                        </select>
+                    </div>
+                    <div class="details-section" style="padding: 20px; margin-top: 10px; margin-bottom: 20px;">
+                        <h3 style="font-size: 1.3rem; margin-bottom: 15px; padding-bottom: 15px;">বিক্রয়ের শিটসমূহ</h3>
+                        <div id="salesListContainer"></div>
+                        <h4 class="total-display">মোট বিক্রয়: <span id="totalSheetSalesDisplay">৳ 0.00</span></h4>
+                        <div class="add-sale-form">
+                            <input type="text" id="bookNoInput" placeholder="বুক নং">
+                            <input type="number" id="saleAmount" placeholder="টাকার পরিমাণ">
+                            <button id="addSaleBtn" class="btn-add">+</button>
+                        </div>
+                        <p id="saleError" class="error-message"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="voucherAmount">মোট ভাউচারের পরিমাণ</label>
+                        <input type="number" id="voucherAmount" placeholder="৳ 0.00">
+                    </div>
+                    <button id="goToStep2Btn" class="btn btn-primary">পরবর্তী ধাপ &rarr;</button>
+                    <button id="backToDashboardBtn1" class="btn btn-secondary">&larr; ড্যাশবোর্ডে ফিরে যান</button>
+                </div>
+
+                <div id="step2" class="card">
+                    <h2>ধাপ ২: ক্যাশ নোট গণনা</h2>
+                    <div id="noteCounter" class="note-grid"></div>
+                    <div class="total-cash-display">গণনা করা ক্যাশ: <span id="totalCountedCashDisplay">৳ 0.00</span></div>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="otherCashAmount">অন্যান্য (জমা/খরচ)</label>
+                        <input type="number" id="otherCashAmount" placeholder="৳ 0.00">
+                    </div>
+                     <div class="form-group">
+                        <label for="otherCashNote">বিবরণ/নোট</label>
+                        <input type="text" id="otherCashNote" placeholder="টাকা কে নিয়েছে বা কেন নেওয়া হয়েছে">
+                    </div>
+                    <div class="grand-total-cash-display">সর্বমোট ক্যাশ: <span id="grandTotalCashDisplay">৳ 0.00</span></div>
+                    <div class="button-group">
+                        <button id="backToStep1Btn" class="btn btn-secondary">&larr; পিছনে যান</button>
+                        <button id="calculateBtn" class="btn btn-primary">হিসাব সম্পন্ন করুন</button>
+                    </div>
+                </div>
+                
+                <div id="summaryCard" class="card"></div>
+
+                <div id="historyCard" class="card">
+                    <h2>পূর্বের হিসাবসমূহ</h2>
+                    <div class="search-form">
+                        <input type="date" id="searchDateInput">
+                        <button id="searchBtn" class="btn btn-primary">অনুসন্ধান</button>
+                        <button id="clearSearchBtn" class="btn btn-secondary">মুছুন</button>
+                    </div>
+                    <div id="historyListContainer"></div>
+                    <button id="backToDashboardBtn2" class="btn btn-secondary">&larr; ড্যাশবোর্ডে ফিরে যান</button>
+                </div>
+
+                <div id="historyDetailCard" class="card">
+                    <div id="historyDetailContent"></div>
+                </div>
+
+                <div id="dailySummaryListCard" class="card">
+                    <h2>দৈনিক সারসংক্ষেপ</h2>
+                    <p class="header-info">যেকোনো একটি তারিখ নির্বাচন করুন</p>
+                    <div id="dailySummaryListContainer"></div>
+                    <button id="backToDashboardBtn3" class="btn btn-secondary">&larr; ড্যাশবোর্ডে ফিরে যান</button>
+                </div>
+
+                <div id="dailySummaryDetailCard" class="card">
+                    <h2 id="summaryDetailTitle"></h2>
+                    <div id="dailySummaryDetailContainer"></div>
+                    <button id="backToSummaryListBtn" class="btn btn-secondary">&larr; পিছনে যান</button>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC2nyyK33J9s8n6W5Cm-t5vQ7YVWvwWYDo",
+            authDomain: "cashsheet-pro-app.firebaseapp.com",
+            projectId: "cashsheet-pro-app",
+            storageBucket: "cashsheet-pro-app.appspot.com",
+            messagingSenderId: "490078367753",
+            appId: "1:490078367753:web:d2970ee8858f516a0708d8",
+            measurementId: "G-8P6WLCGD93"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        const UI = {
+            loginCard: document.getElementById('loginCard'),
+            dashboardCard: document.getElementById('dashboardCard'),
+            appContent: document.getElementById('appContent'),
+            welcomeUserEmail: document.getElementById('welcomeUserEmail'),
+            salesListContainer: document.getElementById('salesListContainer'),
+            noteCounter: document.getElementById('noteCounter'),
+            loader: document.getElementById('loader'),
+
+            formatCurrency(amount) {
+                const numericAmount = Number(amount);
+                if (isNaN(numericAmount)) return '৳ 0.00';
+                return `৳ ${numericAmount.toFixed(2)}`;
+            },
+
+            formatDate: (dateString) => new Date(dateString).toLocaleString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }),
+
+            switchView(viewName) {
+                this.loginCard.classList.remove('active');
+                this.dashboardCard.classList.remove('active');
+                this.appContent.style.display = 'none';
+                if (viewName === 'login') this.loginCard.classList.add('active');
+                else if (viewName === 'dashboard') this.dashboardCard.classList.add('active');
+                else if (viewName === 'app') this.appContent.style.display = 'block';
+            },
+
+            showCard(cardId) {
+                document.querySelectorAll('#appContent .card').forEach(card => card.classList.remove('active'));
+                document.getElementById(cardId).classList.add('active');
+            },
+            
+            toggleLoader(show) {
+                this.loader.style.display = show ? 'flex' : 'none';
+            },
+
+            updateUIBasedOnRole(role) {
+                const isAdmin = role === 'admin';
+                const elementsToToggle = [
+                    ...document.querySelectorAll('#addSaleBtn, #saveOnlineBtn, #goToStep2Btn, #calculateBtn'),
+                    ...document.querySelectorAll('.delete-btn')
+                ];
+                elementsToToggle.forEach(el => el.style.display = isAdmin ? '' : 'none');
+
+                const inputsToToggle = [
+                    ...document.querySelectorAll('#bookNoInput, #saleAmount, #voucherAmount, #otherCashAmount, #otherCashNote'),
+                    ...document.querySelectorAll('.note-input')
+                ];
+                inputsToToggle.forEach(el => el.disabled = !isAdmin);
+
+                const newCalcButton = document.getElementById('goToNewCalculationBtn');
+                if (newCalcButton) {
+                    newCalcButton.style.display = isAdmin ? '' : 'none';
+                }
+            },
+
+            renderSalesList(salesEntries) {
+                this.salesListContainer.innerHTML = '';
+                let totalSales = 0;
+                salesEntries.forEach((entry, index) => {
+                    const item = document.createElement('div');
+                    item.className = "sale-item";
+                    item.innerHTML = `<span>বুক নং: ${entry.description || 'N/A'} - ${this.formatCurrency(entry.amount)}</span><button class="delete-btn" data-index="${index}">&times;</button>`;
+                    this.salesListContainer.appendChild(item);
+                    totalSales += entry.amount;
+                });
+                document.getElementById('totalSheetSalesDisplay').textContent = this.formatCurrency(totalSales);
+                this.updateUIBasedOnRole(App.currentUserRole);
+            },
+
+            initializeNoteCounter(notes, updateTotalCash) {
+                this.noteCounter.innerHTML = '';
+                notes.forEach(note => {
+                    const noteEl = document.createElement('div');
+                    noteEl.classList.add('note-row');
+                    noteEl.innerHTML = `<label>৳ ${note}</label><input type="number" data-value="${note}" class="note-input" placeholder="0" min="0"><span class="note-subtotal" id="subtotal${note}">${this.formatCurrency(0)}</span>`;
+                    this.noteCounter.appendChild(noteEl);
+                });
+                document.getElementById('otherCashAmount').value = '';
+                document.getElementById('otherCashNote').value = '';
+                this.noteCounter.addEventListener('input', App.debounce(updateTotalCash, 250));
+                document.getElementById('otherCashAmount').addEventListener('input', App.debounce(updateTotalCash, 250));
+                updateTotalCash();
+            },
+
+            displaySummary(data) {
+                document.getElementById('summaryCard').innerHTML = `
+                    <h2 class="card-title">বিস্তারিত হিসাব</h2>
+                    <div class="header-info">${`তারিখ: ${this.formatDate(data.date)}। শিফট: ${data.shift}`}</div>
+                    <div class="details-section" style="padding: 15px; margin-top:0;">
+                        ${this.getCalculationHTML(data)}
+                    </div>
+                    <h4 class="details-subtitle">শিটসমূহের তালিকা</h4>
+                    <input type="text" id="summarySearchInput" placeholder="বুক নং বা পরিমাণ দিয়ে খুঁজুন..." class="form-group search-input">
+                    <div id="summarySheetDetailsContainer"></div>
+                    <div class="button-group">
+                        <button id="saveOnlineBtn" class="btn btn-success">অনলাইনে সেভ করুন</button>
+                        <button id="startNewCalculationBtn" class="btn btn-primary">নতুন হিসাব শুরু করুন</button>
+                    </div>
+                `;
+                document.getElementById('saveOnlineBtn').addEventListener('click', () => App.saveCalculationOnline());
+                document.getElementById('startNewCalculationBtn').addEventListener('click', () => App.startNewCalculation());
+                document.getElementById('summarySearchInput').addEventListener('input', (e) => App.searchSummarySheets(e));
+                this.renderSummarySheetDetails(data.sheets);
+                this.updateUIBasedOnRole(App.currentUserRole);
+            },
+
+            renderSummarySheetDetails(sheets) {
+                const container = document.getElementById('summarySheetDetailsContainer');
+                if (!container) return;
+                let tableHTML = `<div class="sheet-details-header"><div>শিট নং</div><div>বুক নং</div><div style="text-align: right;">পরিমাণ</div></div>`;
+                if (sheets && sheets.length > 0) {
+                    sheets.forEach((sheet, index) => {
+                        tableHTML += `<div class="sheet-details-row"><div>${index + 1}</div><div>${sheet.description || 'N/A'}</div><div>${this.formatCurrency(sheet.amount)}</div></div>`;
+                    });
+                } else {
+                    tableHTML += `<div style="text-align:center; padding: 20px;">কোনো শিট যোগ করা হয়নি।</div>`;
+                }
+                container.innerHTML = tableHTML;
+            },
+            
+            renderHistoryList(data) {
+                const container = document.getElementById('historyListContainer');
+                container.innerHTML = '';
+                if (data.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;">কোনো হিসাব পাওয়া যায়নি।</p>';
+                    return;
+                }
+                data.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `<div class="history-item-info"><h3>তারিখ: ${this.formatDate(item.date)}</h3><p>শিফট: ${item.shift}</p></div><button class="btn btn-primary view-detail-btn" data-id="${item.id}">বিস্তারিত দেখুন</button>`;
+                    container.appendChild(historyItem);
+                });
+            },
+            
+            getCalculationHTML(data) {
+                const grandTotal = (data.totalSheetSales || 0) + (data.difference || 0);
+                const differenceLabel = data.difference >= 0 ? 'অতিরিক্ত (+)' : 'ঘাটতি (-)';
+                const differenceColorStyle = data.difference >= 0 ? 'style="color: var(--text-color);"' : 'style="color: var(--danger-color);"';
+                const otherCash = data.otherCash || 0;
+                const countedNotesOnly = (data.totalCountedCash || 0) - otherCash;
+                
+                let otherCashSection = '';
+                if (otherCash !== 0) {
+                    const otherCashLabel = data.otherCashNote ? data.otherCashNote : 'অন্যান্য (+/-)';
+                    
+                    otherCashSection = `<div class="summary-row">
+                                          <span>${otherCashLabel}</span>
+                                          <span>${this.formatCurrency(otherCash)}</span>
+                                       </div>`;
+                }
+
+                return `
+                    <div class="summary-row">
+                        <span>মোট শীট</span>
+                        <span>${this.formatCurrency(data.totalSheetSales)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span ${differenceColorStyle}>${differenceLabel}</span>
+                        <span ${differenceColorStyle}>
+                            ${this.formatCurrency(Math.abs(data.difference))}
+                        </span>
+                    </div>
+                    <hr class="summary-divider">
+                    <div class="summary-row summary-bold-final">
+                        <span>মোট বিক্রি</span>
+                        <span>${this.formatCurrency(grandTotal)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>ভাউচার (-)</span>
+                        <span>${this.formatCurrency(data.voucherAmount)}</span>
+                    </div>
+                    <hr class="summary-double-divider">
+                    <div class="summary-row">
+                        <span>গণনা করা ক্যাশ</span>
+                        <span>${this.formatCurrency(countedNotesOnly)}</span>
+                    </div>
+                    ${otherCashSection}
+                    <div class="summary-row summary-bold-final" style="border-top: 1px solid #ccc; padding-top: 10px;">
+                        <span>মোট ক্যাশ</span>
+                        <span>${this.formatCurrency(data.totalCountedCash)}</span>
+                    </div>
+                `;
+            },
+
+            displayHistoryDetail(data) {
+                const formattedData = {
+                    date: data.date,
+                    shift: data.shift
+                };
+
+                if (data.totalSheetSales !== undefined) {
+                    formattedData.totalSheetSales = data.totalSheetSales || 0;
+                    formattedData.voucherAmount = data.voucherAmount || 0;
+                    formattedData.totalCountedCash = data.totalCountedCash || 0;
+                    formattedData.difference = data.difference || 0;
+                    formattedData.otherCash = data.otherCash || 0;
+                    formattedData.otherCashNote = data.otherCashNote || '';
+                } else {
+                    formattedData.totalSheetSales = data.sheets.reduce((sum, sheet) => sum + (sheet.amount || 0), 0);
+                    formattedData.difference = data.extraAmount || 0;
+                    formattedData.totalCountedCash = data.finalDerivedCash || 0;
+                    const grandTotalSale = formattedData.totalSheetSales + formattedData.difference;
+                    formattedData.voucherAmount = grandTotalSale - formattedData.totalCountedCash;
+                    formattedData.otherCash = 0;
+                    formattedData.otherCashNote = '';
+                }
+
+                const container = document.getElementById('historyDetailContent');
+                container.innerHTML = `
+                    <h2 class="card-title" style="font-size: 1.6rem; margin-bottom: 5px;">বিস্তারিত হিসাব</h2>
+                    <div class="header-info">${`তারিখ: ${UI.formatDate(formattedData.date)}। শিফট: ${formattedData.shift}`}</div>
+                    <div class="details-section" style="padding: 15px; margin-top:0;">
+                        ${UI.getCalculationHTML(formattedData)}
+                    </div>
+                    <button id="backToHistoryListBtn" class="btn btn-secondary" style="width:100%;">&larr; পিছনে যান</button>
+                `;
+                container.querySelector('#backToHistoryListBtn').addEventListener('click', () => UI.showCard('historyCard'));
+
+                UI.showCard('historyDetailCard');
+            },
+
+            renderDailySummaryList(dates) {
+                const container = document.getElementById('dailySummaryListContainer');
+                container.innerHTML = '';
+                if (dates.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;">কোনো হিসাব পাওয়া যায়নি।</p>';
+                    return;
+                }
+                dates.forEach(date => {
+                    const item = document.createElement('div');
+                    item.className = 'summary-date-item';
+                    item.dataset.date = date;
+                    item.innerHTML = `<h3>${this.formatDate(date)}</h3><span style="font-weight:bold; font-size: 1.5rem;">&rarr;</span>`;
+                    container.appendChild(item);
+                });
+            },
+
+            renderDailySummaryDetail(date, data) {
+                document.getElementById('summaryDetailTitle').textContent = `হিসাব: ${this.formatDate(date)}`;
+                const container = document.getElementById('dailySummaryDetailContainer');
+                container.innerHTML = `
+                    <div class="details-section">
+                        <h3>দিন</h3>
+                        <div class="summary-row" style="border: none;"><span>মোট বিক্রয়</span><span>${this.formatCurrency(data.day.totalSales)}</span></div>
+                        <div class="summary-row" style="border: none;"><span>মোট ক্যাশ</span><span>${this.formatCurrency(data.day.totalCash)}</span></div>
+                    </div>
+                     <div class="details-section">
+                        <h3>রাত</h3>
+                        <div class="summary-row" style="border: none;"><span>মোট বিক্রয়</span><span>${this.formatCurrency(data.night.totalSales)}</span></div>
+                        <div class="summary-row" style="border: none;"><span>মোট ক্যাশ</span><span>${this.formatCurrency(data.night.totalCash)}</span></div>
+                    </div>
+                     <div class="details-section" style="background-color: #f1f3f5; border-color: var(--primary-color);">
+                        <h3 style="color: var(--primary-color);">সর্বমোট</h3>
+                        <div class="summary-row summary-bold-final" style="border: none;"><span>মোট বিক্রয়</span><span>${this.formatCurrency(data.grandTotal.totalSales)}</span></div>
+                        <div class="summary-row summary-bold-final" style="border: none;"><span>মোট ক্যাশ</span><span>${this.formatCurrency(data.grandTotal.totalCash)}</span></div>
+                    </div>
+                `;
+            }
+        };
+
+        const Firestore = {
+            db: firebase.firestore(),
+            
+            async getUserRole(uid) {
+                try {
+                    const doc = await this.db.collection('users').doc(uid).get();
+                    return (doc.exists && doc.data().role) ? doc.data().role : 'viewer';
+                } catch (error) {
+                    console.error("Error getting user role:", error);
+                    return 'viewer';
+                }
+            },
+
+            async saveCalculation(calculationData) {
+                UI.toggleLoader(true);
+                const saveBtn = document.getElementById('saveOnlineBtn');
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'সেভ হচ্ছে...';
+                try {
+                    await this.db.collection("calculations").add(calculationData);
+                    alert("হিসাব সফলভাবে অনলাইনে সেভ হয়েছে!");
+                } catch (error) {
+                    alert(`সেভ করতে সমস্যা হয়েছে।\nত্রুটি: ${error.message}`);
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'অনলাইনে সেভ করুন';
+                    UI.toggleLoader(false);
+                }
+            },
+
+            async fetchAllCalculations() {
+                UI.toggleLoader(true);
+                try {
+                    const querySnapshot = await this.db.collection("calculations").orderBy("timestamp", "desc").get();
+                    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } catch (error) {
+                    alert('হিসাব আনতে সমস্যা হয়েছে।');
+                    return [];
+                } finally {
+                    UI.toggleLoader(false);
+                }
+            }
+        };
+
+        const Auth = {
+            auth: firebase.auth(),
+            init() {
+                this.auth.onAuthStateChanged(async user => {
+                    UI.toggleLoader(true);
+                    if (user) {
+                        const role = await Firestore.getUserRole(user.uid);
+                        App.setCurrentUser(user, role);
+                        UI.welcomeUserEmail.textContent = user.email;
+                        UI.switchView('dashboard');
+                        App.renderDashboardView();
+                        UI.updateUIBasedOnRole(role);
+                    } else {
+                        App.setCurrentUser(null, null);
+                        UI.switchView('login');
+                    }
+                    UI.toggleLoader(false);
+                });
+            },
+
+            login() {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                const loginError = document.getElementById('loginError');
+                loginError.textContent = '';
+                if (!email || !password) {
+                    loginError.textContent = 'অনুগ্রহ করে ইমেল এবং পাসওয়ার্ড দিন।';
+                    return;
+                }
+                UI.toggleLoader(true);
+                this.auth.signInWithEmailAndPassword(email, password)
+                    .catch(error => { loginError.textContent = 'আপনার ইমেল অথবা পাসওয়ার্ড ভুল হয়েছে।'; })
+                    .finally(() => { UI.toggleLoader(false); });
+            },
+
+            logout() { this.auth.signOut(); }
+        };
+
+        const App = {
+            salesEntries: [],
+            currentCalculationData: {},
+            historyDataCache: [],
+            dailySummaryCache: {},
+            notes: [1000, 500, 200, 100, 50, 20, 10, 5, 2, 1],
+            currentUser: null,
+            currentUserRole: null,
+            charts: {},
+
+            init() {
+                document.addEventListener('DOMContentLoaded', () => {
+                    Auth.init();
+                    this.addEventListeners();
+                });
+            },
+            
+            setCurrentUser(user, role) {
+                this.currentUser = user;
+                this.currentUserRole = role;
+            },
+            
+            debounce(func, delay) {
+                let timeout;
+                return (...args) => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), delay);
+                };
+            },
+
+            addEventListeners() {
+                document.getElementById('loginBtn').addEventListener('click', () => Auth.login());
+                document.getElementById('logoutBtn').addEventListener('click', () => Auth.logout());
+                document.getElementById('goToNewCalculationBtn').addEventListener('click', () => this.startNewCalculation());
+                document.getElementById('addSaleBtn').addEventListener('click', () => this.addSaleEntry());
+                document.getElementById('salesListContainer').addEventListener('click', (e) => this.handleSalesListClick(e));
+                document.getElementById('goToStep2Btn').addEventListener('click', () => this.goToStep2());
+                document.getElementById('backToStep1Btn').addEventListener('click', () => UI.showCard('step1'));
+                document.getElementById('calculateBtn').addEventListener('click', () => this.calculateAndShowSummary());
+                document.getElementById('backToDashboardBtn1').addEventListener('click', () => { UI.switchView('dashboard'); this.renderDashboardView(); });
+                document.getElementById('backToDashboardBtn2').addEventListener('click', () => { UI.switchView('dashboard'); this.renderDashboardView(); });
+                document.getElementById('backToDashboardBtn3').addEventListener('click', () => { UI.switchView('dashboard'); this.renderDashboardView(); });
+                document.getElementById('goToHistoryBtn').addEventListener('click', () => this.showHistory());
+                document.getElementById('goToDailySummaryBtn').addEventListener('click', () => this.showDailySummaryList());
+                document.getElementById('backToSummaryListBtn').addEventListener('click', () => UI.showCard('dailySummaryListCard'));
+                document.getElementById('searchBtn').addEventListener('click', () => this.searchHistory());
+                document.getElementById('clearSearchBtn').addEventListener('click', () => this.clearHistorySearch());
+                document.getElementById('historyListContainer').addEventListener('click', (e) => this.handleHistoryListClick(e));
+                document.getElementById('dailySummaryListContainer').addEventListener('click', (e) => this.handleSummaryListClick(e));
+            },
+
+            startNewCalculation() {
+                if (this.currentUserRole !== 'admin') {
+                    alert('নতুন হিসাব শুরু করার অনুমতি আপনার নেই।');
+                    return;
+                }
+                this.salesEntries = [];
+                this.currentCalculationData = {};
+                localStorage.removeItem('cashSheetData');
+                this.loadDataFromLocalStorage();
+                UI.renderSalesList(this.salesEntries);
+                document.getElementById('voucherAmount').value = '';
+                UI.switchView('app');
+                UI.showCard('step1');
+            },
+
+            async showHistory() {
+                UI.switchView('app');
+                UI.showCard('historyCard');
+                document.getElementById('searchDateInput').value = '';
+                document.getElementById('historyListContainer').innerHTML = '<p style="text-align:center;">লোড হচ্ছে...</p>';
+                if(this.historyDataCache.length === 0){
+                    this.historyDataCache = await Firestore.fetchAllCalculations();
+                }
+                UI.renderHistoryList(this.historyDataCache);
+            },
+
+                        async showDailySummaryList() {
+                UI.switchView('app');
+                UI.showCard('dailySummaryListCard');
+                document.getElementById('dailySummaryListContainer').innerHTML = '<p style="text-align:center;">লোড হচ্ছে...</p>';
+                if(this.historyDataCache.length === 0){
+                    this.historyDataCache = await Firestore.fetchAllCalculations();
+                }
+                const allData = this.historyDataCache;
+
+                const groupedByDate = allData.reduce((acc, current) => {
+                    const date = current.date;
+                    if (!acc[date]) {
+                        acc[date] = {
+                            day: { totalSales: 0, totalCash: 0 },
+                            night: { totalSales: 0, totalCash: 0 },
+                            grandTotal: { totalSales: 0, totalCash: 0 }
+                        };
+                    }
+                    const shift = current.shift === 'রাত' ? 'night' : 'day';
+
+                    let sales;
+                    if (current.totalSheetSales !== undefined) {
+                        sales = (current.totalSheetSales || 0) + (current.difference || 0);
+                    } else {
+                        const totalSheetSalesFromSheets = current.sheets ? current.sheets.reduce((s, sh) => s + (sh.amount || 0), 0) : 0;
+                        sales = totalSheetSalesFromSheets + (current.extraAmount || 0);
+                    }
+                    
+                    const cash = current.totalCountedCash || current.finalDerivedCash || 0;
+                    
+                    acc[date][shift].totalSales += sales;
+                    acc[date][shift].totalCash += cash;
+                    acc[date].grandTotal.totalSales += sales;
+                    acc[date].grandTotal.totalCash += cash;
+                    return acc;
+                }, {});
+                this.dailySummaryCache = groupedByDate;
+                const sortedDates = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a));
+                UI.renderDailySummaryList(sortedDates);
+            },
+            
+            handleSummaryListClick(e) {
+                const target = e.target.closest('.summary-date-item');
+                if (target) {
+                    const date = target.dataset.date;
+                    this.showDailySummaryDetail(date);
+                }
+            },
+
+            async renderDashboardView() {
+                UI.toggleLoader(true);
+                this.historyDataCache = await Firestore.fetchAllCalculations();
+                const calculations = this.historyDataCache;
+                
+                const toDateString = (date) => {
+                    const d = new Date(date);
+                    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+                    return d.toISOString().slice(0, 10);
+                };
+
+                const todayStr = toDateString(new Date());
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = toDateString(yesterday);
+                
+                let todaySales = 0;
+                let yesterdaySales = 0;
+                let weeklySales = 0;
+
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+                calculations.forEach(item => {
+                    const saleDate = new Date(item.date);
+                    const totalSale = item.totalSheetSales !== undefined ? 
+                        (item.totalSheetSales + item.difference) : 
+                        (item.sheets.reduce((s, sh) => s + sh.amount, 0) + (item.extraAmount || 0));
+
+                    if (item.date === todayStr) {
+                        todaySales += totalSale;
+                    }
+                    if (item.date === yesterdayStr) {
+                        yesterdaySales += totalSale;
+                    }
+                    if (saleDate >= oneWeekAgo) {
+                        weeklySales += totalSale;
+                    }
+                });
+                document.getElementById('statTodaySales').textContent = UI.formatCurrency(todaySales);
+                document.getElementById('statYesterdaySales').textContent = UI.formatCurrency(yesterdaySales);
+                document.getElementById('statWeeklySales').textContent = UI.formatCurrency(weeklySales);
+                
+                const salesByDate = calculations
+                    .filter(item => new Date(item.date) >= oneWeekAgo)
+                    .reduce((acc, item) => {
+                        const totalSale = item.totalSheetSales !== undefined ? 
+                            (item.totalSheetSales + item.difference) : 
+                            (item.sheets.reduce((s, sh) => s + sh.amount, 0) + (item.extraAmount || 0));
+                        acc[item.date] = (acc[item.date] || 0) + totalSale;
+                        return acc;
+                    }, {});
+
+                const sortedDates = Object.keys(salesByDate).sort((a, b) => new Date(a) - new Date(b));
+                const trendLabels = sortedDates.map(date => new Date(date).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' }));
+                const trendData = sortedDates.map(date => salesByDate[date]);
+                
+                if (this.charts.salesTrendChart) this.charts.salesTrendChart.destroy();
+                
+                const ctx = document.getElementById('salesTrendChartDashboard').getContext('2d');
+                this.charts.salesTrendChart = new Chart(ctx, {
+                    type: 'bar', 
+                    data: {
+                        labels: trendLabels,
+                        datasets: [{
+                            label: 'মোট বিক্রয়',
+                            data: trendData,
+                            backgroundColor: 'rgba(74, 144, 226, 0.6)',
+                            borderColor: 'rgba(74, 144, 226, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: { display: true, text: 'গত ৭ দিনের বিক্রয়' },
+                            legend: { display: false }
+                        },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+
+                UI.toggleLoader(false);
+            },
+
+            showDailySummaryDetail(date) {
+                const dataForDate = this.dailySummaryCache[date];
+                if (dataForDate) {
+                    UI.renderDailySummaryDetail(date, dataForDate);
+                    UI.showCard('dailySummaryDetailCard');
+                }
+            },
+
+            addSaleEntry() {
+                if (this.currentUserRole !== 'admin') return;
+                const bookNoInput = document.getElementById('bookNoInput');
+                const saleAmountInput = document.getElementById('saleAmount');
+                const saleError = document.getElementById('saleError');
+                const amount = parseFloat(saleAmountInput.value);
+                const description = bookNoInput.value.trim();
+                saleError.textContent = '';
+                if (!description) {
+                    saleError.textContent = 'অনুগ্রহ করে বুক নং লিখুন।';
+                    return;
+                }
+                if (isNaN(amount) || amount <= 0) {
+                    saleError.textContent = 'অনুগ্রহ করে টাকার সঠিক পরিমাণ লিখুন।';
+                    return;
+                }
+                this.salesEntries.push({ description, amount });
+                bookNoInput.value = '';
+                saleAmountInput.value = '';
+                UI.renderSalesList(this.salesEntries);
+                this.saveDataToLocalStorage();
+            },
+
+            handleSalesListClick(e) {
+                if (e.target.classList.contains('delete-btn')) {
+                    if (this.currentUserRole !== 'admin') return;
+                    const isConfirmed = confirm('আপনি কি এই হিসাবটি মুছে ফেলতে চান?');
+                    if (isConfirmed) {
+                        this.salesEntries.splice(parseInt(e.target.dataset.index, 10), 1);
+                        UI.renderSalesList(this.salesEntries);
+                        this.saveDataToLocalStorage();
+                    }
+                }
+            },
+
+            goToStep2() {
+                if (this.currentUserRole !== 'admin') return;
+                if (this.salesEntries.length === 0 && (parseFloat(document.getElementById('voucherAmount').value) || 0) === 0) {
+                    alert('অন্তত একটি বিক্রয়ের শিট যোগ করুন।');
+                    return;
+                }
+                UI.initializeNoteCounter(this.notes, () => this.updateTotalCash());
+                UI.updateUIBasedOnRole(this.currentUserRole);
+                UI.showCard('step2');
+            },
+
+            updateTotalCash() {
+                let countedTotal = 0;
+                document.querySelectorAll('#noteCounter .note-input').forEach(input => {
+                    const value = parseInt(input.dataset.value, 10);
+                    const count = parseInt(input.value, 10) || 0;
+                    const subtotal = value * count;
+                    countedTotal += subtotal;
+                    document.getElementById(`subtotal${value}`).textContent = UI.formatCurrency(subtotal);
+                });
+                document.getElementById('totalCountedCashDisplay').textContent = UI.formatCurrency(countedTotal);
+                
+                const otherTotal = parseFloat(document.getElementById('otherCashAmount').value) || 0;
+                const grandTotal = countedTotal + otherTotal;
+                document.getElementById('grandTotalCashDisplay').textContent = UI.formatCurrency(grandTotal);
+            },
+
+            calculateAndShowSummary() {
+                if (this.currentUserRole !== 'admin') return;
+                const voucherAmount = parseFloat(document.getElementById('voucherAmount').value) || 0;
+                const totalSheetSales = this.salesEntries.reduce((sum, entry) => sum + entry.amount, 0);
+                
+                let countedNotesTotal = 0;
+                document.querySelectorAll('#noteCounter .note-input').forEach(input => {
+                    countedNotesTotal += (parseInt(input.dataset.value, 10) * (parseInt(input.value, 10) || 0));
+                });
+                
+                const otherCash = parseFloat(document.getElementById('otherCashAmount').value) || 0;
+                const otherCashNote = document.getElementById('otherCashNote').value.trim();
+                const totalCountedCash = countedNotesTotal + otherCash;
+
+                const difference = (totalCountedCash + voucherAmount) - totalSheetSales;
+                
+                this.currentCalculationData = {
+                    totalSheetSales, voucherAmount, totalCountedCash, difference, otherCash, otherCashNote,
+                    date: document.getElementById('calculationDate').value,
+                    shift: document.getElementById('calculationShift').value,
+                    sheets: this.salesEntries,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    calculatedBy: this.currentUser.email
+                };
+                UI.displaySummary(this.currentCalculationData);
+                UI.showCard('summaryCard');
+            },
+            
+            saveCalculationOnline() {
+                if (this.currentUserRole !== 'admin') {
+                    alert('এই হিসাব সেভ করার অনুমতি আপনার নেই।');
+                    return;
+                }
+                Firestore.saveCalculation(this.currentCalculationData);
+            },
+
+            saveDataToLocalStorage() {
+                const dataToSave = {
+                    sales: this.salesEntries,
+                    voucher: document.getElementById('voucherAmount').value,
+                    date: document.getElementById('calculationDate').value,
+                    shift: document.getElementById('calculationShift').value
+                };
+                localStorage.setItem('cashSheetData', JSON.stringify(dataToSave));
+            },
+
+            loadDataFromLocalStorage() {
+                try {
+                    const saved = JSON.parse(localStorage.getItem('cashSheetData'));
+                    if (saved) {
+                        this.salesEntries = saved.sales || [];
+                        document.getElementById('voucherAmount').value = saved.voucher || '';
+                        document.getElementById('calculationDate').value = saved.date || new Date().toISOString().slice(0, 10);
+                        document.getElementById('calculationShift').value = saved.shift || 'দিন';
+                    } else {
+                        document.getElementById('calculationDate').value = new Date().toISOString().slice(0, 10);
+                    }
+                } catch (e) {
+                    this.salesEntries = [];
+                    document.getElementById('calculationDate').value = new Date().toISOString().slice(0, 10);
+                }
+            },
+            
+            searchHistory() {
+                const searchDate = document.getElementById('searchDateInput').value;
+                if (!searchDate) { 
+                    alert('অনুসন্ধান করার জন্য একটি তারিখ নির্বাচন করুন।'); 
+                    return; 
+                }
+                const filteredData = this.historyDataCache.filter(item => item.date === searchDate);
+                UI.renderHistoryList(filteredData);
+            },
+
+            clearHistorySearch() {
+                document.getElementById('searchDateInput').value = '';
+                UI.renderHistoryList(this.historyDataCache);
+            },
+
+            handleHistoryListClick(e) {
+                if(e.target.classList.contains('view-detail-btn')) {
+                    const docId = e.target.dataset.id;
+                    const data = this.historyDataCache.find(item => item.id === docId);
+                    if (data) UI.displayHistoryDetail(data);
+                }
+            },
+
+            searchSummarySheets(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                document.querySelectorAll('#summarySheetDetailsContainer .sheet-details-row').forEach(row => {
+                    row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? 'grid' : 'none';
+                });
+            }
+        };
+
+        App.init();
+
+    </script>
+</body>
+</html>
