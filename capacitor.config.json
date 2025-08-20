@@ -1,0 +1,6 @@
+{
+  "appId": "com.jannat.cashapp",
+  "appName": "Jannat Cash Pro",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
