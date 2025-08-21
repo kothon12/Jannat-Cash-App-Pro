@@ -160,6 +160,12 @@
         #summarySheetDetailsContainer .sheet-details-row { border-bottom: 1px solid var(--border-color); }
         #summarySheetDetailsContainer .sheet-details-row:last-child { border-bottom: none; }
         #summarySheetDetailsContainer .sheet-details-row div:last-child { text-align: right; font-weight: 500; }
+        .card-title {
+    text-align: center;
+}
+#summaryDetailTitle {
+    text-align: center;
+}
         .error-message { color: var(--danger-color); text-align: center; margin-top: 15px; height: 20px; }
         .button-group { display:flex; gap:15px; margin-top:20px; }
         .search-form { display:flex; gap: 10px; margin-bottom: 20px; align-items: center; }
@@ -233,7 +239,7 @@
         </div>
 
         <div id="appContent" style="display: none;">
-            <header><h1>Jannat's Cash Pro</h1></header>
+            <header id="mainAppHeader"><h1>Jannat's Cash Pro</h1></header>
             <main>
                 <div id="step1" class="card">
                     <h2>ধাপ ১: বিক্রয় ও ভাউচার</h2>
@@ -305,7 +311,6 @@
 
                 <div id="dailySummaryListCard" class="card">
                     <h2>দৈনিক সারসংক্ষেপ</h2>
-                    <p class="header-info">যেকোনো একটি তারিখ নির্বাচন করুন</p>
                     <div id="dailySummaryListContainer"></div>
                     <button id="backToDashboardBtn3" class="btn btn-secondary">&larr; ড্যাশবোর্ডে ফিরে যান</button>
                 </div>
@@ -313,7 +318,6 @@
                 <div id="dailySummaryDetailCard" class="card">
                     <h2 id="summaryDetailTitle"></h2>
                     <div id="dailySummaryDetailContainer"></div>
-                    <button id="backToSummaryListBtn" class="btn btn-secondary">&larr; পিছনে যান</button>
                 </div>
             </main>
         </div>
@@ -323,6 +327,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <script>
         const firebaseConfig = {
@@ -500,7 +505,7 @@
                             ${this.formatCurrency(Math.abs(data.difference))}
                         </span>
                     </div>
-                    <hr class="summary-divider">
+                    <hr class="summary-double-divider">
                     <div class="summary-row summary-bold-final">
                         <span>মোট বিক্রি</span>
                         <span>${this.formatCurrency(grandTotal)}</span>
@@ -509,13 +514,14 @@
                         <span>ভাউচার (-)</span>
                         <span>${this.formatCurrency(data.voucherAmount)}</span>
                     </div>
-                    <hr class="summary-double-divider">
+                    <hr class="summary-divider">
                     <div class="summary-row">
                         <span>গণনা করা ক্যাশ</span>
                         <span>${this.formatCurrency(countedNotesOnly)}</span>
                     </div>
                     ${otherCashSection}
-                    <div class="summary-row summary-bold-final" style="border-top: 1px solid #ccc; padding-top: 10px;">
+                    <hr class="summary-double-divider">
+                    <div class="summary-row summary-bold-final" style="border-top: none; padding-top: 10px;">
                         <span>মোট ক্যাশ</span>
                         <span>${this.formatCurrency(data.totalCountedCash)}</span>
                     </div>
@@ -549,12 +555,29 @@
                 container.innerHTML = `
                     <h2 class="card-title" style="font-size: 1.6rem; margin-bottom: 5px;">বিস্তারিত হিসাব</h2>
                     <div class="header-info">${`তারিখ: ${UI.formatDate(formattedData.date)}। শিফট: ${formattedData.shift}`}</div>
-                    <div class="details-section" style="padding: 15px; margin-top:0;">
-                        ${UI.getCalculationHTML(formattedData)}
+                    <div id="historyCaptureArea">
+                        <div class="details-section" style="padding: 15px; margin-top:0;">
+                            ${UI.getCalculationHTML(formattedData)}
+                        </div>
                     </div>
-                    <button id="backToHistoryListBtn" class="btn btn-secondary" style="width:100%;">&larr; পিছনে যান</button>
                 `;
-                container.querySelector('#backToHistoryListBtn').addEventListener('click', () => UI.showCard('historyCard'));
+                
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'button-group';
+
+                const saveImgBtn = document.createElement('button');
+                saveImgBtn.className = 'btn btn-success';
+                saveImgBtn.textContent = 'ছবি হিসেবে সেভ করুন';
+                saveImgBtn.addEventListener('click', () => App.saveHistoryAsImage());
+
+                const backBtn = document.createElement('button');
+                backBtn.className = 'btn btn-secondary';
+                backBtn.innerHTML = '&larr; পিছনে যান';
+                backBtn.addEventListener('click', () => UI.showCard('historyCard'));
+
+                buttonContainer.appendChild(saveImgBtn);
+                buttonContainer.appendChild(backBtn);
+                container.appendChild(buttonContainer);
 
                 UI.showCard('historyDetailCard');
             },
@@ -579,22 +602,50 @@
                 document.getElementById('summaryDetailTitle').textContent = `হিসাব: ${this.formatDate(date)}`;
                 const container = document.getElementById('dailySummaryDetailContainer');
                 container.innerHTML = `
-                    <div class="details-section">
-                        <h3>দিন</h3>
-                        <div class="summary-row" style="border: none;"><span>মোট বিক্রয়</span><span>${this.formatCurrency(data.day.totalSales)}</span></div>
-                        <div class="summary-row" style="border: none;"><span>মোট ক্যাশ</span><span>${this.formatCurrency(data.day.totalCash)}</span></div>
-                    </div>
-                     <div class="details-section">
-                        <h3>রাত</h3>
-                        <div class="summary-row" style="border: none;"><span>মোট বিক্রয়</span><span>${this.formatCurrency(data.night.totalSales)}</span></div>
-                        <div class="summary-row" style="border: none;"><span>মোট ক্যাশ</span><span>${this.formatCurrency(data.night.totalCash)}</span></div>
-                    </div>
-                     <div class="details-section" style="background-color: #f1f3f5; border-color: var(--primary-color);">
-                        <h3 style="color: var(--primary-color);">সর্বমোট</h3>
-                        <div class="summary-row summary-bold-final" style="border: none;"><span>মোট বিক্রয়</span><span>${this.formatCurrency(data.grandTotal.totalSales)}</span></div>
-                        <div class="summary-row summary-bold-final" style="border: none;"><span>মোট ক্যাশ</span><span>${this.formatCurrency(data.grandTotal.totalCash)}</span></div>
-                    </div>
-                `;
+                    <div id="captureArea">
+                        <div class="details-section">
+                            <h3>দিন</h3>
+                            <div class="summary-row" style="border: none;"><span>মোট বিক্রয়</span><span>${this.formatCurrency(data.day.totalSales)}</span></div>
+                            <div class="summary-row" style="border: none;"><span>মোট ক্যাশ</span><span>${this.formatCurrency(data.day.totalCash)}</span></div>
+                        </div>
+                         <div class="details-section">
+                            <h3>রাত</h3>
+                            <div class="summary-row" style="border: none;"><span>মোট বিক্রয়</span><span>${this.formatCurrency(data.night.totalSales)}</span></div>
+                            <div class="summary-row" style="border: none;"><span>মোট ক্যাশ</span><span>${this.formatCurrency(data.night.totalCash)}</span></div>
+                        </div>
+                         <div class="details-section">
+                            <h3 style="color: var(--primary-color);">সর্বমোট</h3>
+                            <div class="summary-row summary-bold-final" style="border: none;"><span>মোট বিক্রয়</span><span>${this.formatCurrency(data.grandTotal.totalSales)}</span></div>
+                            <div class="summary-row summary-bold-final" style="border: none;"><span>মোট ক্যাশ</span><span>${this.formatCurrency(data.grandTotal.totalCash)}</span></div>
+                        </div>
+                    </div>`;
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'button-group';
+                
+                const saveImgBtn = document.createElement('button');
+                saveImgBtn.className = 'btn btn-success';
+                saveImgBtn.textContent = 'ছবি হিসেবে সেভ করুন';
+                
+                const backBtn = document.createElement('button');
+                backBtn.className = 'btn btn-secondary';
+                backBtn.innerHTML = '&larr; পিছনে যান';
+
+                buttonContainer.appendChild(saveImgBtn);
+                buttonContainer.appendChild(backBtn);
+                
+                const card = document.getElementById('dailySummaryDetailCard');
+                const existingButtonGroup = card.querySelector('.button-group');
+                if (existingButtonGroup) {
+                    existingButtonGroup.remove();
+                }
+                card.appendChild(buttonContainer);
+
+                saveImgBtn.addEventListener('click', () => App.saveReportAsImage());
+                backBtn.addEventListener('click', () => {
+                    UI.showCard('dailySummaryListCard');
+                    buttonContainer.remove();
+                });
             }
         };
 
@@ -724,7 +775,6 @@
                 document.getElementById('backToDashboardBtn3').addEventListener('click', () => { UI.switchView('dashboard'); this.renderDashboardView(); });
                 document.getElementById('goToHistoryBtn').addEventListener('click', () => this.showHistory());
                 document.getElementById('goToDailySummaryBtn').addEventListener('click', () => this.showDailySummaryList());
-                document.getElementById('backToSummaryListBtn').addEventListener('click', () => UI.showCard('dailySummaryListCard'));
                 document.getElementById('searchBtn').addEventListener('click', () => this.searchHistory());
                 document.getElementById('clearSearchBtn').addEventListener('click', () => this.clearHistorySearch());
                 document.getElementById('historyListContainer').addEventListener('click', (e) => this.handleHistoryListClick(e));
@@ -757,7 +807,7 @@
                 UI.renderHistoryList(this.historyDataCache);
             },
 
-                        async showDailySummaryList() {
+            async showDailySummaryList() {
                 UI.switchView('app');
                 UI.showCard('dailySummaryListCard');
                 document.getElementById('dailySummaryListContainer').innerHTML = '<p style="text-align:center;">লোড হচ্ছে...</p>';
@@ -1052,6 +1102,56 @@
                 document.querySelectorAll('#summarySheetDetailsContainer .sheet-details-row').forEach(row => {
                     row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? 'grid' : 'none';
                 });
+            },
+
+            captureAndSaveImage(selectors, fileName) {
+                UI.toggleLoader(true);
+                const captureContainer = document.createElement('div');
+                captureContainer.style.position = 'absolute';
+                captureContainer.style.left = '-9999px';
+                captureContainer.style.width = '500px';
+                captureContainer.style.padding = '30px';
+                captureContainer.style.backgroundColor = 'white';
+                
+                selectors.forEach(selector => {
+                    const element = document.querySelector(selector);
+                    if(element) {
+                        captureContainer.appendChild(element.cloneNode(true));
+                    }
+                });
+                
+                document.body.appendChild(captureContainer);
+
+                html2canvas(captureContainer, {
+                    scale: 2,
+                    useCORS: true
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `${fileName}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    document.body.removeChild(captureContainer);
+                    UI.toggleLoader(false);
+                }).catch(err => {
+                    alert('ছবি সেভ করতে সমস্যা হয়েছে।');
+                    document.body.removeChild(captureContainer);
+                    UI.toggleLoader(false);
+                });
+            },
+
+            saveReportAsImage() {
+                const titleElement = document.getElementById('summaryDetailTitle');
+                const fileName = `Jannat_Cash_Pro_Daily_${titleElement.textContent.replace('হিসাব: ', '')}`;
+                const selectors = ['#mainAppHeader', '#summaryDetailTitle', '#captureArea'];
+                this.captureAndSaveImage(selectors, fileName);
+            },
+
+            saveHistoryAsImage() {
+                const headerInfo = document.querySelector('#historyDetailContent .header-info').textContent;
+                const cleanFileName = headerInfo.replace(/তারিখ:|শিফট:|।/g, '').replace(/,/g, '').replace(/\s+/g, '_').trim();
+                const fileName = `Jannat_Cash_Pro_History_${cleanFileName}`;
+                const selectors = ['#mainAppHeader', '#historyDetailContent .card-title', '#historyDetailContent .header-info', '#historyCaptureArea'];
+                this.captureAndSaveImage(selectors, fileName);
             }
         };
 
