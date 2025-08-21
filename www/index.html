@@ -1105,39 +1105,56 @@
             },
 
             captureAndSaveImage(selectors, fileName) {
-                UI.toggleLoader(true);
-                const captureContainer = document.createElement('div');
-                captureContainer.style.position = 'absolute';
-                captureContainer.style.left = '-9999px';
-                captureContainer.style.width = '500px';
-                captureContainer.style.padding = '30px';
-                captureContainer.style.backgroundColor = 'white';
-                
-                selectors.forEach(selector => {
-                    const element = document.querySelector(selector);
-                    if(element) {
-                        captureContainer.appendChild(element.cloneNode(true));
-                    }
-                });
-                
-                document.body.appendChild(captureContainer);
+    UI.toggleLoader(true);
+    const captureContainer = document.createElement('div');
+    captureContainer.style.position = 'absolute';
+    captureContainer.style.left = '-9999px';
+    captureContainer.style.width = '500px';
+    captureContainer.style.padding = '30px';
+    captureContainer.style.backgroundColor = 'white';
+    
+    selectors.forEach(selector => {
+        const element = document.querySelector(selector);
+        if(element) {
+            captureContainer.appendChild(element.cloneNode(true));
+        }
+    });
+    
+    document.body.appendChild(captureContainer);
 
-                html2canvas(captureContainer, {
-                    scale: 2,
-                    useCORS: true
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `${fileName}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                    document.body.removeChild(captureContainer);
-                    UI.toggleLoader(false);
-                }).catch(err => {
-                    alert('ছবি সেভ করতে সমস্যা হয়েছে।');
-                    document.body.removeChild(captureContainer);
-                    UI.toggleLoader(false);
-                });
-            },
+    html2canvas(captureContainer, { scale: 2, useCORS: true })
+    .then(async (canvas) => {
+        if (navigator.share && navigator.canShare) {
+            const blob = await (await fetch(canvas.toDataURL('image/png'))).blob();
+            const file = new File([blob], `${fileName}.png`, { type: 'image/png' });
+
+            
+            if (navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        title: fileName,
+                        files: [file]
+                    });
+                } catch (err) {
+                    console.error("Share failed:", err.message);
+                }
+            } else {
+                alert("এই ডিভাইসে ছবি শেয়ার করার সুবিধাটি নেই।");
+            }
+        } else {
+            const link = document.createElement('a');
+            link.download = `${fileName}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+    }).catch(err => {
+        alert('ছবি তৈরি করতে সমস্যা হয়েছে।');
+    }).finally(() => {
+        document.body.removeChild(captureContainer);
+        UI.toggleLoader(false);
+    });
+},
 
             saveReportAsImage() {
                 const titleElement = document.getElementById('summaryDetailTitle');
