@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Jannat Cash Pro</string>
+    <string name="title_activity_main">Jannat Cash Pro</string>
+    <string name="package_name">com.jannat.cashapp</string>
+    <string name="custom_url_scheme">com.jannat.cashapp</string>
+</resources>
