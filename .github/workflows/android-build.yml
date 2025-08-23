@@ -25,6 +25,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Set permissions for capacitor
+        run: chmod +x node_modules/.bin/capacitor
+
       - name: Add Android Platform
         run: npx cap add android
 
