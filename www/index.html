@@ -3,36 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jannat's Cash Pro - ক্যাশ হিসাব</title>
+    <title>Jannat's Cash - ক্যাশ হিসাব</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-color: #4A90E2; --success-color: #28a745; --danger-color: #dc3545;
-            --info-color: #17a2b8; --secondary-color: #6c757d; --background-color: #f8f9fa;
-            --text-color: #343a40; --card-bg-color: #ffffff; --border-color: #dee2e6;
+            --primary-color: #dee2e6; --success-color: #28a745; --danger-color: #dc3545;
+            --info-color: #17a2b8; --secondary-color: #dee2e6; --background-color: #f8f9fa;
+            --text-color: #000; --card-bg-color: #ffffff; --border-color: #dee2e6;
             --box-shadow: 0 4px 25px rgba(0, 0, 0, 0.07);
+            background: radial-gradient(circle at center, #A12A45, #58142D);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Hind Siliguri', sans-serif; background-color: var(--background-color);
+            font-family: 'Hind Siliguri', sans-serif; background: #f8f9fa;
             color: var(--text-color); display: flex; justify-content: center; align-items: flex-start;
             min-height: 100vh; padding: 20px;
         }
         .app-container { width: 100%; max-width: 500px; position: relative; }
         header { text-align: center; margin-bottom: 30px; }
-        header h1 { font-size: 2.2rem; color: var(--primary-color); font-weight: 700; }
+        header h1 { font-size: 2.2rem; color: #58142D; font-weight: 700; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); }
         .card {
-            background-color: var(--card-bg-color); border-radius: 16px; padding: 30px;
-            box-shadow: var(--box-shadow); margin-bottom: 20px; border: 1px solid var(--border-color);
-            animation: fadeIn 0.5s ease-in-out; display: none;
-        }
-        .card.active { display: block; }
+    background: radial-gradient(circle at center, #A12A45, #58142D);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: var(--box-shadow);
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    animation: fadeIn 0.5s ease-in-out;
+    display: none;
+    position: relative; 
+}
+        .card.active {
+    display: flex;
+    flex-direction: column;
+    background: radial-gradient(circle at center, #A12A45, #58142D);
+}
         .card h2 { font-size: 1.6rem; margin-bottom: 25px; color: var(--primary-color); text-align: center; font-weight: 600; }
+        .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 2.2rem;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+}
+.close-btn:hover {
+    color: #343a40;
+}
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; }
+        .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
         .form-group input, .form-group select, .search-input, .add-sale-form input {
             width: 100%; padding: 12px 15px; border: 1px solid var(--border-color);
             border-radius: 8px; font-size: 1rem; font-family: 'Hind Siliguri', sans-serif;
@@ -47,9 +78,25 @@
             font-weight: 600; cursor: pointer; transition: all 0.3s ease;
             font-family: 'Hind Siliguri', sans-serif; margin-top: 10px;
         }
-        .btn-primary { background-color: var(--primary-color); color: white; }
-        .btn-primary:hover { background-color: #357ABD; }
-        .btn-secondary { background-color: var(--secondary-color); color: white; margin-top: 10px; }
+        
+.btn-primary {
+    background-color: #FFFFFF; 
+    color: #58142D; 
+    border: 1px solid #FFFFFF; 
+}
+.btn-primary:hover {
+    background-color: rgba(255, 255, 255, 0.9); 
+    color: #A12A45;
+}
+.btn-secondary {
+    background-color: transparent; 
+    color: #FFFFFF; 
+    border: 1px solid #FFFFFF; 
+    margin-top: 10px;
+}
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1); 
+}
         .btn-success { background-color: var(--success-color); color: white; }
         .btn-info { background-color: var(--info-color); color: white; }
         .btn-danger { background-color: var(--danger-color); color: white; width: auto; padding: 10px 20px; display: block; margin: 30px auto 0 auto; }
@@ -72,42 +119,70 @@
             margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; transition: box-shadow 0.2s; cursor: pointer;
         }
         .history-item:hover, .summary-date-item:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-        .history-item-info h3, .summary-date-item h3 { font-size: 1.1rem; color: var(--primary-color); margin-bottom: 5px; }
+        
+.history-item-info h3 {
+    font-size: 1.1rem;
+    color: #58142D; 
+    margin-bottom: 5px;
+}
+
+.summary-date-item h3 {
+    font-size: 1.1rem;
+    color: #58142D; 
+    margin-bottom: 5px;
+}
+
+.summary-date-item span {
+    color: #58142D; 
+}
+.history-item-info p {
+    color: #58142D; 
+}
         .dashboard-header { text-align: center; margin-bottom: 35px; }
         .dashboard-header h2 { font-size: 2.2rem; color: var(--primary-color); }
         .dashboard-header p { font-size: 1.1rem; color: var(--secondary-color); margin-top: 5px; }
         .option-icon { margin: 0 auto 20px auto; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .option-icon svg { width: 30px; height: 30px; }
-        .new-calc-icon { background-color: rgba(40, 167, 69, 0.1); }
-        .new-calc-icon svg { fill: var(--success-color); }
-        .history-icon { background-color: rgba(23, 162, 184, 0.1); }
-        .history-icon svg { fill: var(--info-color); }
-        .daily-summary-icon { background-color: rgba(74, 144, 226, 0.1); }
-        .daily-summary-icon svg { fill: var(--primary-color); }
+        
+
+.new-calc-icon, .history-icon, .daily-summary-icon {
+    background-color: rgba(88, 20, 45, 0.1); 
+}
+
+
+.new-calc-icon svg, .history-icon svg, .daily-summary-icon svg {
+    fill: #58142D; 
+}
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
         }
-        .stat-card {
-            background-color: #f8f9fa;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
         .stat-card h4 {
             font-size: 1rem;
-            color: var(--secondary-color);
+            color: var(--text-color);
             margin-bottom: 10px;
-            font-weight: 500;
-        }
-        .stat-card p {
-            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary-color);
         }
+        .stat-card {
+    background-color: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px 10px; 
+    text-align: center;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    min-height: 110px; 
+}
+
+.stat-card p {
+    font-size: 1.2rem; 
+    font-weight: 700;
+    color: var(--text-color);
+    word-wrap: break-word; 
+}
         .chart-container-main {
             margin-bottom: 30px;
             padding: 15px;
@@ -136,23 +211,48 @@
             font-size: 1.2rem;
             color: var(--text-color);
         }
+
+        .search-form input[type="date"] {
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 1rem;
+    color: var(--secondary-color);
+    flex-grow: 1; 
+    min-width: 150px; 
+}
+.search-form input[type="date"]:valid {
+    color: var(--text-color);
+}
         .note-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .note-row { display: flex; flex-direction: column; background: #fafafa; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
         .note-row label { font-weight: 600; margin-bottom: 5px; }
         .note-row input { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; }
         .note-row .note-subtotal { font-size: 0.8rem; color: #555; margin-top: 5px; font-weight: 500; }
-        .total-cash-display { text-align: right; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 1.1rem; }
-        .grand-total-cash-display { text-align: right; margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--primary-color); font-size: 1.2rem; font-weight: 700;}
-        .total-display { text-align: center; margin: 15px 0; font-size: 1.1rem; }
+        .total-cash-display { text-align: right; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 1.1rem; color: var(--primary-color); }
+        .grand-total-cash-display { text-align: right; margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--primary-color); font-size: 1.2rem; font-weight: 700; color: var(--primary-color); }
+        .total-display { text-align: center; margin: 15px 0; font-size: 1.1rem; color: var(--primary-color); }
         .summary-row { display: flex; justify-content: space-between; padding: 14px 5px; align-items: center; font-size: 1.1rem; }
-        .summary-row span:first-child { font-weight: 500; color: #495057; }
+        .summary-row span:first-child, .summary-row span:last-child {
+    color: var(--primary-color); 
+}
         .summary-row span:last-child { font-weight: 600; }
-        .summary-bold-final span { font-weight: 700; font-size: 1.25rem; color: var(--text-color); }
+        .summary-bold-final span { 
+    font-weight: 700; 
+    font-size: 1.25rem; 
+    color: #FFFFFF; 
+}
         .summary-divider { border: none; height: 1px; background-color: #333; margin: 8px 0; }
         .summary-double-divider { border: none; border-top: 3px double #333; margin: 8px 0; }
         .details-section { border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-top: 20px; margin-bottom: 20px; }
         .details-section h3 { text-align: center; margin-bottom: 15px; font-weight: 600; color: var(--primary-color); font-size: 1.4rem; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);}
-        .details-subtitle { text-align:center; margin: 25px 0 15px 0; font-weight: 600; color: var(--secondary-color); }
+        .details-subtitle { 
+    text-align:center; 
+    margin: 25px 0 15px 0; 
+    font-weight: 600; 
+    color: #FFFFFF; 
+}
         #summarySheetDetailsContainer .sheet-details-header, #summarySheetDetailsContainer .sheet-details-row {
             display: grid; grid-template-columns: 1fr 2fr 2fr; gap: 10px; padding: 10px; align-items: center;
         }
@@ -184,6 +284,26 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @media (max-width: 360px) { .date-shift-group, .note-grid { grid-template-columns: 1fr; } }
+
+
+       
+.image-capture-mode {
+    background-color: #FFFFFF !important;
+    padding: 30px;
+}
+.image-capture-mode * {
+    color: #000000 !important; 
+}
+.image-capture-mode .details-section,
+.image-capture-mode .header-info {
+    background-color: #FFFFFF !important; 
+    border-color: #DDDDDD !important; 
+}
+.image-capture-mode .summary-divider,
+.image-capture-mode .summary-double-divider {
+    background-color: #000000 !important; 
+    border-color: #000000 !important;
+}
     </style>
 </head>
 <body>
@@ -239,9 +359,10 @@
         </div>
 
         <div id="appContent" style="display: none;">
-            <header id="mainAppHeader"><h1>Jannat's Cash Pro</h1></header>
+            <header id="mainAppHeader"><h1>Jannat's Cash</h1></header>
             <main>
                 <div id="step1" class="card">
+                    <button class="close-btn" aria-label="Close">&times;</button>
                     <h2>ধাপ ১: বিক্রয় ও ভাউচার</h2>
                     <div class="form-group">
                         <label for="calculationDate">তারিখ</label>
@@ -274,6 +395,7 @@
                 </div>
 
                 <div id="step2" class="card">
+                    <button class="close-btn" aria-label="Close">&times;</button>
                     <h2>ধাপ ২: ক্যাশ নোট গণনা</h2>
                     <div id="noteCounter" class="note-grid"></div>
                     <div class="total-cash-display">গণনা করা ক্যাশ: <span id="totalCountedCashDisplay">৳ 0.00</span></div>
@@ -295,6 +417,7 @@
                 <div id="summaryCard" class="card"></div>
 
                 <div id="historyCard" class="card">
+                    <button class="close-btn" aria-label="Close">&times;</button>
                     <h2>পূর্বের হিসাবসমূহ</h2>
                     <div class="search-form">
                         <input type="date" id="searchDateInput">
@@ -306,16 +429,19 @@
                 </div>
 
                 <div id="historyDetailCard" class="card">
+                    <button class="close-btn" aria-label="Close">&times;</button>
                     <div id="historyDetailContent"></div>
                 </div>
 
                 <div id="dailySummaryListCard" class="card">
+                    <button class="close-btn" aria-label="Close">&times;</button>
                     <h2>দৈনিক সারসংক্ষেপ</h2>
                     <div id="dailySummaryListContainer"></div>
                     <button id="backToDashboardBtn3" class="btn btn-secondary">&larr; ড্যাশবোর্ডে ফিরে যান</button>
                 </div>
 
                 <div id="dailySummaryDetailCard" class="card">
+                    <button class="close-btn" aria-label="Close">&times;</button>
                     <h2 id="summaryDetailTitle"></h2>
                     <div id="dailySummaryDetailContainer"></div>
                 </div>
@@ -352,10 +478,10 @@
             loader: document.getElementById('loader'),
 
             formatCurrency(amount) {
-                const numericAmount = Number(amount);
-                if (isNaN(numericAmount)) return '৳ 0.00';
-                return `৳ ${numericAmount.toFixed(2)}`;
-            },
+    const numericAmount = Number(amount);
+    if (isNaN(numericAmount)) return '৳0.00'; 
+    return `৳${numericAmount.toFixed(2)}`; 
+},
 
             formatDate: (dateString) => new Date(dateString).toLocaleString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }),
 
@@ -428,7 +554,8 @@
 
             displaySummary(data) {
                 document.getElementById('summaryCard').innerHTML = `
-                    <h2 class="card-title">বিস্তারিত হিসাব</h2>
+                   <button class="close-btn" aria-label="Close">&times;</button> 
+                <h2 class="card-title">বিস্তারিত হিসাব</h2>
                     <div class="header-info">${`তারিখ: ${this.formatDate(data.date)}। শিফট: ${data.shift}`}</div>
                     <div class="details-section" style="padding: 15px; margin-top:0;">
                         ${this.getCalculationHTML(data)}
@@ -480,7 +607,7 @@
             getCalculationHTML(data) {
                 const grandTotal = (data.totalSheetSales || 0) + (data.difference || 0);
                 const differenceLabel = data.difference >= 0 ? 'অতিরিক্ত (+)' : 'ঘাটতি (-)';
-                const differenceColorStyle = data.difference >= 0 ? 'style="color: var(--text-color);"' : 'style="color: var(--danger-color);"';
+                const differenceColorStyle = 'style="color: var(--primary-color);"';
                 const otherCash = data.otherCash || 0;
                 const countedNotesOnly = (data.totalCountedCash || 0) - otherCash;
                 
@@ -779,6 +906,34 @@
                 document.getElementById('clearSearchBtn').addEventListener('click', () => this.clearHistorySearch());
                 document.getElementById('historyListContainer').addEventListener('click', (e) => this.handleHistoryListClick(e));
                 document.getElementById('dailySummaryListContainer').addEventListener('click', (e) => this.handleSummaryListClick(e));
+                document.getElementById('appContent').addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('close-btn')) {
+        return;
+    }
+    const parentCard = e.target.closest('.card');
+    if (!parentCard) return;
+    switch (parentCard.id) {
+        case 'step1':
+        case 'historyCard':
+        case 'dailySummaryListCard':
+            UI.switchView('dashboard');
+            this.renderDashboardView();
+            break;
+            case 'step2':
+            UI.showCard('step1');
+            break;
+            case 'summaryCard':
+            UI.switchView('dashboard');
+            this.renderDashboardView();
+            break;
+            case 'historyDetailCard':
+            UI.showCard('historyCard');
+            break;
+            case 'dailySummaryDetailCard':
+            UI.showCard('dailySummaryListCard');
+            break;
+    }
+    });
             },
 
             startNewCalculation() {
@@ -916,6 +1071,10 @@
                 if (this.charts.salesTrendChart) this.charts.salesTrendChart.destroy();
                 
                 const ctx = document.getElementById('salesTrendChartDashboard').getContext('2d');
+
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, '#1a2980');
+                gradient.addColorStop(1, '#26d0ce');
                 this.charts.salesTrendChart = new Chart(ctx, {
                     type: 'bar', 
                     data: {
@@ -923,19 +1082,46 @@
                         datasets: [{
                             label: 'মোট বিক্রয়',
                             data: trendData,
-                            backgroundColor: 'rgba(74, 144, 226, 0.6)',
-                            borderColor: 'rgba(74, 144, 226, 1)',
+                            backgroundColor: gradient,
+                            borderColor: '#26d0ce',
                             borderWidth: 1
                         }]
                     },
                     options: {
-                        responsive: true,
-                        plugins: {
-                            title: { display: true, text: 'গত ৭ দিনের বিক্রয়' },
-                            legend: { display: false }
-                        },
-                        scales: { y: { beginAtZero: true } }
-                    }
+    responsive: true,
+    plugins: {
+        title: { 
+            display: true, 
+            text: 'গত ৭ দিনের বিক্রয়',
+            color: '#FFFFFF'
+        },
+        legend: { 
+            display: false,
+            labels: {
+                color: '#FFFFFF'
+            }
+        }
+    },
+    scales: { 
+        y: { 
+            beginAtZero: true,
+            ticks: {
+                color: '#FFFFFF' 
+            },
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)' 
+            }
+        },
+        x: {
+            ticks: {
+                color: '#FFFFFF' 
+            },
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+            }
+        }
+    }
+}
                 });
 
                 UI.toggleLoader(false);
@@ -1107,6 +1293,7 @@
             captureAndSaveImage(selectors, fileName) {
     UI.toggleLoader(true);
     const captureContainer = document.createElement('div');
+    captureContainer.classList.add('image-capture-mode');
     captureContainer.style.position = 'absolute';
     captureContainer.style.left = '-9999px';
     captureContainer.style.width = '500px';
